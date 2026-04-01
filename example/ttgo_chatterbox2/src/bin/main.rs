@@ -10,10 +10,10 @@
 extern crate alloc;
 
 use alloc::boxed::Box;
-use alloc::string::String;
+use alloc::string::{String, ToString as _};
+use alloc::vec::Vec;
 use core::cell::RefCell;
 use core::net::Ipv4Addr;
-use core::str::FromStr;
 use critical_section::Mutex;
 use embassy_executor::Spawner;
 use embassy_net::{Config, Ipv4Cidr, StaticConfigV4};
@@ -21,22 +21,22 @@ use esp_hal::clock::CpuClock;
 use esp_hal::timer::timg::TimerGroup;
 use esp_println::println;
 use esp_radio::wifi::{AccessPointConfig, ModeConfig, WifiDevice};
-use heapless::Vec as HeaplessVec;
-use heapless::String as HeaplessString;
 
-use picoserve::{AppBuilder, AppRouter, make_static, routing::{get, post}};
-use picoserve::response::IntoResponse;
 use picoserve::extract::Form;
+use picoserve::response::IntoResponse;
+use picoserve::{
+    AppBuilder, AppRouter, make_static,
+    routing::{get, post},
+};
 
 const SSID: &str = "ChatBox-00110577";
 const AP_IP: Ipv4Addr = Ipv4Addr::new(192, 168, 1, 1);
-const MAX_MESSAGES: usize = 50;
-const MAX_MESSAGE_LEN: usize = 256;
+const MAX_MESSAGES: usize = 100; // Increased since we have PSRAM
+const MAX_MESSAGE_LEN: usize = 512; // Increased since we have PSRAM
 const HTTP_PORT: u16 = 80;
 
-// Message storage - thread-safe with critical_section
-static MESSAGES: Mutex<RefCell<HeaplessVec<HeaplessString<MAX_MESSAGE_LEN>, MAX_MESSAGES>>> =
-    Mutex::new(RefCell::new(HeaplessVec::new()));
+// Message storage in PSRAM - dynamic allocation
+static MESSAGES: Mutex<RefCell<Vec<String>>> = Mutex::new(RefCell::new(Vec::new()));
 
 // HTML template for the chat interface (loaded from external file)
 const CHAT_HTML: &str = include_str!("chat.html");
@@ -49,14 +49,7 @@ async fn index_handler() -> impl IntoResponse {
 async fn get_messages_handler() -> impl IntoResponse {
     let messages = critical_section::with(|cs| {
         let msgs = MESSAGES.borrow_ref(cs);
-        let mut result = HeaplessString::<4096>::new();
-        for (i, msg) in msgs.iter().enumerate() {
-            if i > 0 {
-                result.push('\x1E').unwrap();
-            }
-            result.push_str(msg.as_str()).unwrap();
-        }
-        result
+        msgs.join("\x1E")
     });
 
     messages
@@ -73,8 +66,8 @@ async fn post_message_handler(Form(form): Form<MessageForm>) -> impl IntoRespons
     if !message.is_empty() {
         // Sanitize - remove record separator and limit length
         let clean_msg = message.replace('\x1E', "");
-        let truncated = if clean_msg.len() > MAX_MESSAGE_LEN - 1 {
-            &clean_msg[..MAX_MESSAGE_LEN - 1]
+        let truncated = if clean_msg.len() > MAX_MESSAGE_LEN {
+            &clean_msg[..MAX_MESSAGE_LEN]
         } else {
             &clean_msg
         };
@@ -84,7 +77,7 @@ async fn post_message_handler(Form(form): Form<MessageForm>) -> impl IntoRespons
             if msgs.len() >= MAX_MESSAGES {
                 msgs.remove(0);
             }
-            let _ = msgs.push(HeaplessString::from_str(truncated).unwrap());
+            msgs.push(truncated.to_string());
         });
 
         println!("New message: {}", truncated);
@@ -108,7 +101,8 @@ impl AppBuilder for AppProps {
 
 static CONFIG: picoserve::Config = picoserve::Config::const_default().keep_connection_alive();
 
-const WEB_TASK_POOL_SIZE: usize = 8;
+// Reduced task pool size to save internal RAM
+const WEB_TASK_POOL_SIZE: usize = 2;
 
 #[embassy_executor::task(pool_size = WEB_TASK_POOL_SIZE)]
 async fn web_task(
@@ -117,9 +111,10 @@ async fn web_task(
     app: &'static AppRouter<AppProps>,
 ) -> ! {
     let port = 80;
-    let mut tcp_rx_buffer = [0; 1024];
-    let mut tcp_tx_buffer = [0; 1024];
-    let mut http_buffer = [0; 2048];
+    // Reduced buffer sizes
+    let mut tcp_rx_buffer = [0u8; 512];
+    let mut tcp_tx_buffer = [0u8; 512];
+    let mut http_buffer = [0u8; 1024];
 
     picoserve::Server::new(app, &CONFIG, &mut http_buffer)
         .listen_and_serve(task_id, stack, port, &mut tcp_rx_buffer, &mut tcp_tx_buffer)
@@ -140,7 +135,7 @@ async fn main(spawner: Spawner) {
     let config = esp_hal::Config::default().with_cpu_clock(CpuClock::max());
     let peripherals = esp_hal::init(config);
 
-    esp_alloc::heap_allocator!(#[esp_hal::ram(reclaimed)] size: 98768);
+    esp_alloc::psram_allocator!(&peripherals.PSRAM, esp_hal::psram);
 
     println!("TTGO Chatterbox Starting...");
 
