@@ -35,7 +35,7 @@
       },
       "aarch64-darwin": {
         "url": "https://github.com/esp-rs/rust-build/releases/download/v1.94.0.2/rust-src-1.94.0.2.tar.xz",
-        "hash": "sha256-A8J1ScXW8c39Tw/6KKYsC6+XnCgkGewSGnfxtxttKxz4c="
+        "hash": "sha256-A8J1ScXW8c39Tw/6KKYsC6+XnCgkGewSGnfxttKxz4c="
       }
     }
   },
@@ -43,26 +43,5 @@
     "minimal": ["rust"],
     "default": ["rust", "rust-src"],
     "complete": ["rust", "rust-src"]
-  },
-  "tools": {
-    "xtensa-esp32-elf": {
-      "version": "esp-14.2.0_20260121",
-      "x86_64-linux": {
-        "url": "https://github.com/espressif/crosstool-NG/releases/download/esp-14.2.0_20260121/xtensa-esp-elf-14.2.0_20260121-x86_64-linux-gnu.tar.xz",
-        "hash": "sha256-2jHzbXnU6Z8k5VqQpx5l1WlHFPFhmZYL94hXJLcGpIw="
-      },
-      "aarch64-linux": {
-        "url": "https://github.com/espressif/crosstool-NG/releases/download/esp-14.2.0_20260121/xtensa-esp-elf-14.2.0_20260121-aarch64-linux-gnu.tar.xz",
-        "hash": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-      },
-      "x86_64-darwin": {
-        "url": "https://github.com/espressif/crosstool-NG/releases/download/esp-14.2.0_20260121/xtensa-esp-elf-14.2.0_20260121-x86_64-apple-darwin.tar.xz",
-        "hash": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-      },
-      "aarch64-darwin": {
-        "url": "https://github.com/espressif/crosstool-NG/releases/download/esp-14.2.0_20260121/xtensa-esp-elf-14.2.0_20260121-aarch64-apple-darwin.tar.xz",
-        "hash": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-      }
-    }
   }
 }

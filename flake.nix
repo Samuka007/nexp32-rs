@@ -28,11 +28,15 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        
         # Build ESP toolchain (fenix-inspired design)
         esp-toolchain = import ./lib {
           inherit pkgs lib;
           manifestFile = ./data/esp32.json;
         };
+        
+        # Standalone tools
+        xtensa-gcc = pkgs.callPackage ./pkgs/xtensa-gcc.nix {};
       in
       {
         # Packages - Rust toolchain components and standalone tools
@@ -41,19 +45,28 @@
             rust rust-src
             minimal default complete
             toolchain
-            xtensa-gcc
             ;
           
           # Additional tools
+          inherit xtensa-gcc;
           esp-config = pkgs.callPackage ./pkgs/esp-config.nix {};
         };
 
         # Development shells
         devShells = {
-          default = esp-toolchain.shells.default.overrideAttrs (oldAttrs: {
+          default = (import ./lib/shells.nix {
+            inherit pkgs lib;
+            inherit (esp-toolchain.profiles) complete;
+            inherit xtensa-gcc;
+          }).default.overrideAttrs (oldAttrs: {
             buildInputs = oldAttrs.buildInputs ++ [ self.packages.${system}.esp-config ];
           });
-          std = esp-toolchain.shells.std.overrideAttrs (oldAttrs: {
+          
+          std = (import ./lib/shells.nix {
+            inherit pkgs lib;
+            inherit (esp-toolchain.profiles) complete;
+            inherit xtensa-gcc;
+          }).std.overrideAttrs (oldAttrs: {
             buildInputs = oldAttrs.buildInputs ++ [ self.packages.${system}.esp-config ];
           });
         };
