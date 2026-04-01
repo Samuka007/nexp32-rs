@@ -14,15 +14,15 @@
     };
     aarch64-linux = {
       url = "https://github.com/espressif/crosstool-NG/releases/download/${version}/xtensa-esp-elf-${version}-aarch64-linux-gnu.tar.xz";
-      hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      hash = "sha256-1szi0q87m3wi1d9ji7yqzgqgckiw6jn3rw0kcb0fh0kc7p711bl0";
     };
     x86_64-darwin = {
       url = "https://github.com/espressif/crosstool-NG/releases/download/${version}/xtensa-esp-elf-${version}-x86_64-apple-darwin.tar.xz";
-      hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      hash = "sha256-1srf9dnv4fb3wjynzd4c325ncdximhk7ijhyn84agj92291f7r82";
     };
     aarch64-darwin = {
       url = "https://github.com/espressif/crosstool-NG/releases/download/${version}/xtensa-esp-elf-${version}-aarch64-apple-darwin.tar.xz";
-      hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      hash = "sha256-0zk360m6rbqzzgcwzzijy6f1lrx9w7qbgia5cflr3wd5rr4xnl54";
     };
   };
 
