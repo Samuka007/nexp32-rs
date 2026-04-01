@@ -1,0 +1,8 @@
+{
+  "rust-analyzer.cargo.target": "xtensa-esp32-none-elf",
+  "rust-analyzer.cargo.extraEnv": {
+    "RUSTFLAGS": "-C linker=xtensa-esp32-elf-gcc"
+  },
+  "rust-analyzer.cargo.allTargets": false,
+  "rust-analyzer.check.allTargets": false
+}

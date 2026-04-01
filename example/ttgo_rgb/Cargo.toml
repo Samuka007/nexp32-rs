@@ -1,0 +1,22 @@
+[package]
+edition.workspace    = true
+name                 = "ttgo_rgb"
+rust-version         = "1.88"
+version.workspace    = true
+
+[lib]
+test = false
+
+[[bin]]
+name = "ttgo_rgb"
+path = "./src/bin/main.rs"
+test = false
+
+[dependencies]
+esp-hal = { version = "~1.0", features = ["esp32", "unstable"] }
+esp-bootloader-esp-idf = { version = "0.4.0", features = ["esp32"] }
+esp-println = { version = "0.13.0", features = ["esp32", "auto"] }
+critical-section = "1.2.0"
+
+[features]
+default = ["esp-hal/unstable"]

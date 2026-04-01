@@ -1,0 +1,37 @@
+# Nix
+result
+result-*
+
+# Rust
+/target
+*.rs.bk
+
+# IDEs
+*.swp
+*.swo
+*~
+.direnv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+/build
+/dist
+*.o
+*.elf
+*.bin
+*.map
+
+# ESP-IDF
+/esp-idf
+managed_components
+sdkconfig
+sdkconfig.old
+build/
+
+# Secrets
+*.pem
+*.key
+secrets/

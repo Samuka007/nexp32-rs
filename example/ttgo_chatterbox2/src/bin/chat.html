@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatterbox</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f0f0f0; 
+        }
+        h1 { 
+            color: #333; 
+            text-align: center; 
+        }
+        #messages { 
+            background: white; 
+            border-radius: 8px; 
+            padding: 20px; 
+            min-height: 200px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .message { 
+            border-bottom: 1px solid #eee; 
+            padding: 10px 0; 
+            word-wrap: break-word; 
+        }
+        .message:last-child { 
+            border-bottom: none; 
+        }
+        textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            resize: vertical; 
+            min-height: 80px; 
+            box-sizing: border-box; 
+        }
+        button { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin-top: 10px; 
+        }
+        button:hover { 
+            background: #0056b3; 
+        }
+        .empty { 
+            color: #999; 
+            text-align: center; 
+            font-style: italic; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Chatterbox</h1>
+    <div id="messages"></div>
+    <textarea id="messageInput" placeholder="Type your message here..."></textarea>
+    <button onclick="sendMessage()">Send</button>
+    
+    <script>
+        async function loadMessages() {
+            try {
+                const response = await fetch('/messages');
+                const text = await response.text();
+                const messages = text.split('\x1E').filter(m => m.trim());
+                const container = document.getElementById('messages');
+                container.innerHTML = messages.length === 0 
+                    ? '<div class="empty">No messages yet. Be the first!</div>'
+                    : messages.map(m => `<div class="message">${escapeHtml(m)}</div>`).join('');
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message) return alert('Please enter a message');
+            
+            try {
+                const formData = new FormData();
+                formData.append('message', message);
+                
+                await fetch('/message', {
+                    method: 'POST',
+                    body: formData
+                });
+                input.value = '';
+                loadMessages();
+            } catch (e) {
+                alert('Failed to send');
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        loadMessages();
+        setInterval(loadMessages, 3000);
+    </script>
+</body>
+</html>

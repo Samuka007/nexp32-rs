@@ -1,0 +1,18 @@
+[package]
+edition.workspace    = true
+name                 = "hello_world"
+rust-version         = "1.88"
+version.workspace    = true
+
+[lib]
+test = false
+
+[[bin]]
+name = "hello_world"
+path = "./src/bin/main.rs"
+test = false
+
+[dependencies]
+esp-hal = { version = "~1.0", features = ["esp32"] }
+esp-bootloader-esp-idf = { version = "0.4.0", features = ["esp32"] }
+critical-section = "1.2.0"

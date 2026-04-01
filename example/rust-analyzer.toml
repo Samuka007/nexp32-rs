@@ -1,0 +1,9 @@
+[check]
+test = false
+allTargets = false
+
+[cargo]
+allTargets = false
+
+[toolchain]
+channel = "esp"
