@@ -2,6 +2,7 @@
   pkgs,
   lib,
   complete,
+  xtensa-esp32-elf,
 }:
 
 let
@@ -31,13 +32,20 @@ let
     echo "=========================================="
     echo ""
     echo "Rust toolchain: ${complete}/bin/rustc"
+    echo "GCC toolchain: ${xtensa-esp32-elf}/bin/xtensa-esp32-elf-gcc"
     echo ""
     echo "ESP tools:"
     echo "  - esp-generate --chip <esp32|esp32s2|esp32s3> <project-name>"
     echo ""
-    export PATH="${complete}/bin:$HOME/.cargo/bin:$PATH"
+    export PATH="${complete}/bin:${xtensa-esp32-elf}/bin:$HOME/.cargo/bin:$PATH"
     export RUST_SRC_PATH="${complete}/lib/rustlib/src/rust/library"
     export RUSTC_SYSROOT="${complete}"
+    
+    # Configure GCC as the linker for Xtensa targets
+    export CARGO_TARGET_XTENSA_ESP32_NONE_ELF_LINKER="xtensa-esp32-elf-gcc"
+    export CARGO_TARGET_XTENSA_ESP32S2_NONE_ELF_LINKER="xtensa-esp32-elf-gcc"
+    export CARGO_TARGET_XTENSA_ESP32S3_NONE_ELF_LINKER="xtensa-esp32-elf-gcc"
+    
     ${extraEnv}
   '';
 

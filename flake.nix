@@ -35,12 +35,13 @@
         };
       in
       {
-        # Packages - Rust toolchain components
+        # Packages - Rust toolchain components and standalone tools
         packages = {
           inherit (esp-toolchain)
             rust rust-src
             minimal default complete
             toolchain
+            xtensa-gcc
             ;
         };
 

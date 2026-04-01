@@ -19,5 +19,14 @@
     "minimal": ["rust"],
     "default": ["rust", "rust-src"],
     "complete": ["rust", "rust-src"]
+  },
+  "tools": {
+    "xtensa-esp32-elf": {
+      "version": "esp-14.2.0_20260121",
+      "x86_64-linux": {
+        "url": "https://github.com/espressif/crosstool-NG/releases/download/esp-14.2.0_20260121/xtensa-esp-elf-14.2.0_20260121-x86_64-linux-gnu.tar.xz",
+        "hash": "sha256-2jHzbXnU6Z8k5VqQpx5l1WlHFPFhmZYL94hXJLcGpIw="
+      }
+    }
   }
 }
