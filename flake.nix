@@ -43,11 +43,19 @@
             toolchain
             xtensa-gcc
             ;
+          
+          # Additional tools
+          esp-config = pkgs.callPackage ./pkgs/esp-config.nix {};
         };
 
         # Development shells
         devShells = {
-          inherit (esp-toolchain.shells) default std;
+          default = esp-toolchain.shells.default.overrideAttrs (oldAttrs: {
+            buildInputs = oldAttrs.buildInputs ++ [ self.packages.${system}.esp-config ];
+          });
+          std = esp-toolchain.shells.std.overrideAttrs (oldAttrs: {
+            buildInputs = oldAttrs.buildInputs ++ [ self.packages.${system}.esp-config ];
+          });
         };
 
         # Legacy attributes
