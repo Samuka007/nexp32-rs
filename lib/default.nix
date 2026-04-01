@@ -1,4 +1,8 @@
-{ pkgs, lib, manifestFile }:
+{
+  pkgs,
+  lib,
+  manifestFile,
+}:
 
 let
   inherit (pkgs) callPackage;
@@ -14,21 +18,21 @@ let
   mkToolchain = callPackage ./mk-toolchain.nix { };
 
   # Build all components from manifest
-  components = mapAttrs
-    (name: component:
-      let
-        source = component.${pkgs.system} or (throw "Component ${name} not available for ${pkgs.system}");
-      in
-      mkToolchain "-esp-${manifest.version}" {
-        date = manifest.date;
-        component = name;
-        inherit source;
-      }
-    )
-    (filterAttrs (n: v: v ? ${pkgs.system}) manifest.components);
+  components = mapAttrs (
+    name: component:
+    let
+      source = component.${pkgs.system} or (throw "Component ${name} not available for ${pkgs.system}");
+    in
+    mkToolchain "-esp-${manifest.version}" {
+      date = manifest.date;
+      component = name;
+      inherit source;
+    }
+  ) (filterAttrs (n: v: v ? ${pkgs.system}) manifest.components);
 
   # Build profiles by combining components (fenix-style)
-  mkProfile = name:
+  mkProfile =
+    name:
     let
       componentList = manifest.profiles.${name};
       componentPaths = attrVals componentList components;
@@ -38,7 +42,9 @@ let
   profiles = mapAttrs (n: v: mkProfile n) manifest.profiles;
 
 in
-components // profiles // {
+components
+// profiles
+// {
   # Expose manifest info
   inherit manifest;
 
@@ -52,9 +58,7 @@ components // profiles // {
   minimal-toolchain = profiles.minimal;
 
   # Custom component selector (fenix-style)
-  withComponents = names:
-    combine "rust-esp-${manifest.version}-custom"
-      (attrVals names components);
+  withComponents = names: combine "rust-esp-${manifest.version}-custom" (attrVals names components);
 
   # Development shells (GCC added separately in flake.nix)
   shells = import ./shells.nix {

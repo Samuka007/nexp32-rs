@@ -1,4 +1,8 @@
-{ lib, symlinkJoin, stdenv }:
+{
+  lib,
+  symlinkJoin,
+  stdenv,
+}:
 
 let
   inherit (lib) maintainers optionalString platforms;

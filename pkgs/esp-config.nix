@@ -1,11 +1,12 @@
-{ lib
-, rustPlatform
-, fetchCrate
-, pkg-config
-, openssl
-, stdenv
-, darwin
-, libiconv
+{
+  lib,
+  rustPlatform,
+  fetchCrate,
+  pkg-config,
+  openssl,
+  stdenv,
+  darwin,
+  libiconv,
 }:
 
 rustPlatform.buildRustPackage rec {
@@ -16,7 +17,7 @@ rustPlatform.buildRustPackage rec {
     inherit pname version;
     sha256 = "sha256-ZL5O9UZAYFBuj5dEbNZfTNqRsgNr7Y8jzQKlPUZ+iso=";
   };
-  
+
   buildFeatures = [ "tui" ];
 
   nativeBuildInputs = [
@@ -25,7 +26,8 @@ rustPlatform.buildRustPackage rec {
 
   buildInputs = [
     openssl
-  ] ++ lib.optionals stdenv.isDarwin [
+  ]
+  ++ lib.optionals stdenv.isDarwin [
     libiconv
     darwin.apple_sdk.frameworks.Security
   ];
@@ -35,7 +37,10 @@ rustPlatform.buildRustPackage rec {
   meta = with lib; {
     description = "Configure projects using esp-hal and related packages";
     homepage = "https://github.com/esp-rs/esp-config";
-    license = with licenses; [ mit asl20 ];
+    license = with licenses; [
+      mit
+      asl20
+    ];
     maintainers = with maintainers; [ ];
     mainProgram = "esp-config";
   };

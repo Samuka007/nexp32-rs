@@ -1,7 +1,21 @@
-{ callPackage, fetchurl, lib, stdenv, zlib, autoPatchelfHook, patchelf, xz, curl }:
+{
+  callPackage,
+  fetchurl,
+  lib,
+  stdenv,
+  zlib,
+  autoPatchelfHook,
+  patchelf,
+  xz,
+  curl,
+}:
 
 suffix:
-{ date, component, source }:
+{
+  date,
+  component,
+  source,
+}:
 
 let
   inherit (lib) optionalString;

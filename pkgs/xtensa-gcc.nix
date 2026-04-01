@@ -3,7 +3,8 @@
   stdenv,
   fetchurl,
   xz,
-}: let
+}:
+let
   version = "esp-14.2.0_20260121";
 
   # Platform-specific URLs and hashes
@@ -55,6 +56,11 @@ stdenv.mkDerivation {
     description = "GCC toolchain for Xtensa ESP32";
     homepage = "https://github.com/espressif/crosstool-NG";
     license = licenses.gpl3;
-    platforms = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+    platforms = [
+      "x86_64-linux"
+      "aarch64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
   };
 }

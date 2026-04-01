@@ -40,12 +40,12 @@ let
     export PATH="${complete}/bin:${xtensa-gcc}/bin:$HOME/.cargo/bin:$PATH"
     export RUST_SRC_PATH="${complete}/lib/rustlib/src/rust/library"
     export RUSTC_SYSROOT="${complete}"
-    
+
     # Configure GCC as the linker for Xtensa targets
     export CARGO_TARGET_XTENSA_ESP32_NONE_ELF_LINKER="xtensa-esp32-elf-gcc"
     export CARGO_TARGET_XTENSA_ESP32S2_NONE_ELF_LINKER="xtensa-esp32-elf-gcc"
     export CARGO_TARGET_XTENSA_ESP32S3_NONE_ELF_LINKER="xtensa-esp32-elf-gcc"
-    
+
     ${extraEnv}
   '';
 
@@ -53,7 +53,10 @@ in
 {
   default = pkgs.mkShell {
     name = "esp32-all-dev";
-    buildInputs = commonPackages ++ [ complete xtensa-gcc ];
+    buildInputs = commonPackages ++ [
+      complete
+      xtensa-gcc
+    ];
     shellHook = makeShellHook "All Xtensa ESP32 Targets" ''
       echo ""
       echo "Available Xtensa targets:"
