@@ -87,7 +87,7 @@ in
 rec {
   # ============ Toolchain Packages ============
 
-  xtensa-esp32-elf =
+    xtensa-esp32-elf =
     patchToolchain "xtensa-esp32-elf"
       (pkgs.fetchurl {
         url = currentToolchains.xtensa.url;
@@ -96,19 +96,6 @@ rec {
       ''
         mkdir -p $out
         # source root is already xtensa-esp-elf/, copy everything
-        cp -r . $out/
-        chmod -R +x $out/bin/ 2>/dev/null || true
-      '';
-
-  riscv32-esp-elf =
-    patchToolchain "riscv32-esp-elf"
-      (pkgs.fetchurl {
-        url = currentToolchains.riscv.url;
-        sha256 = currentToolchains.riscv.sha256;
-      })
-      ''
-        mkdir -p $out
-        # source root is already riscv32-esp-elf/, copy everything
         cp -r . $out/
         chmod -R +x $out/bin/ 2>/dev/null || true
       '';
@@ -288,7 +275,6 @@ rec {
     name = "esp32-complete-toolchain";
     paths = [
       xtensa-esp32-elf
-      riscv32-esp-elf
       llvm-esp
       rust-xtensa
     ];
@@ -298,7 +284,6 @@ rec {
     name = "esp32-minimal-toolchain";
     paths = [
       xtensa-esp32-elf
-      riscv32-esp-elf
       rust-xtensa
     ];
   };
@@ -309,12 +294,10 @@ rec {
     inherit pkgs lib;
     inherit
       xtensa-esp32-elf
-      riscv32-esp-elf
       llvm-esp
       rust-xtensa
       esp-idf
       ;
-    # espup = null;
   };
 
   combine =
