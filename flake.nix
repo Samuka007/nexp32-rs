@@ -1,5 +1,5 @@
 {
-  description = "ESP32 Rust toolchain and development environment for Nix - Pure Nix implementation";
+  description = "ESP32 Rust toolchain and development environment for Nix - Inspired by fenix";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -23,40 +23,30 @@
         "aarch64-darwin"
       ];
 
-      # Import the library
-      mkLib = pkgs: import ./lib { inherit pkgs lib; };
-
     in
     flake-utils.lib.eachSystem systems (
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        esp-lib = mkLib pkgs;
+        # Build ESP toolchain (fenix-inspired design)
+        esp-toolchain = import ./lib {
+          inherit pkgs lib;
+          manifestFile = ./data/esp32.json;
+        };
       in
       {
-        # Packages - Xtensa-only toolchains as pure Nix packages
+        # Packages - Rust toolchain components
         packages = {
-          # GCC Toolchains (Xtensa only)
-          xtensa-esp32-elf = esp-lib.xtensa-esp32-elf;
-
-          # LLVM/Clang with Xtensa support
-          llvm-esp = esp-lib.llvm-esp;
-
-          # Rust with Xtensa support
-          rust-xtensa = esp-lib.rust-xtensa;
-
-          # ESP-IDF
-          esp-idf = esp-lib.esp-idf;
-
-          # Combined toolchain
-          default = esp-lib.complete-toolchain;
-          minimal = esp-lib.minimal-toolchain;
+          inherit (esp-toolchain)
+            rust rust-src
+            minimal default complete
+            toolchain
+            ;
         };
 
-        # Development shells (Xtensa targets only)
+        # Development shells
         devShells = {
-          default = esp-lib.shells.default;
-          std = esp-lib.shells.std;
+          inherit (esp-toolchain.shells) default std;
         };
 
         # Legacy attributes
@@ -65,19 +55,16 @@
     )
     // {
       # Overlay
-      overlays = {
-        default = final: prev: {
-          esp-rs = mkLib final;
+      overlays.default = final: prev: {
+        esp-rs = import ./lib {
+          inherit (final) pkgs lib;
+          manifestFile = ./data/esp32.json;
         };
       };
 
-      # Module for NixOS/home-manager
-      nixosModules.default = import ./module.nix;
-      homeManagerModules.default = import ./module.nix;
-
-      # Library functions
+      # Library
       lib = {
-        inherit mkLib;
+        mkToolchain = import ./lib/mk-toolchain.nix;
       };
     };
 }
