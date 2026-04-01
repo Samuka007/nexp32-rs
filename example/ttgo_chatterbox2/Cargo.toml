@@ -39,18 +39,3 @@ heapless = "0.8.0"
 picoserve = { version = "0.18.0", features = ["embassy", "alloc"] }
 serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
 static_cell = "2.1.1"
-
-
-[profile.dev]
-# Rust debug is too slow.
-# For debug builds always builds with some optimization
-opt-level = "s"
-
-[profile.release]
-codegen-units = 1        # LLVM can perform better optimizations using a single thread
-debug = 2
-debug-assertions = false
-incremental = false
-lto = 'fat'
-opt-level = 's'
-overflow-checks = false
