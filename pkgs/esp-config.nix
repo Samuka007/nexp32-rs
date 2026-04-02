@@ -5,7 +5,6 @@
   pkg-config,
   openssl,
   stdenv,
-  darwin,
   libiconv,
 }:
 
@@ -29,7 +28,6 @@ rustPlatform.buildRustPackage rec {
   ]
   ++ lib.optionals stdenv.isDarwin [
     libiconv
-    darwin.apple_sdk.frameworks.Security
   ];
 
   cargoHash = "sha256-7QPS780N3sxsNTLg8TOC/npIq34pTQnsl1aZWHlMgL4=";

@@ -5,25 +5,26 @@
   xz,
 }:
 let
-  version = "esp-14.2.0_20260121";
+  version = "14.2.0_20260121";
+  baseUrl = "https://github.com/espressif/crosstool-NG/releases/download/esp-${version}/xtensa-esp-elf-${version}";
 
-  # Platform-specific URLs and hashes
+  # Platform-specific hashes
   platformInfo = {
     x86_64-linux = {
-      url = "https://github.com/espressif/crosstool-NG/releases/download/${version}/xtensa-esp-elf-${version}-x86_64-linux-gnu.tar.xz";
+      url = "${baseUrl}-x86_64-linux-gnu.tar.xz";
       hash = "sha256-2jHzbXnU6Z8k5VqQpx5l1WlHFPFhmZYL94hXJLcGpIw=";
     };
     aarch64-linux = {
-      url = "https://github.com/espressif/crosstool-NG/releases/download/${version}/xtensa-esp-elf-${version}-aarch64-linux-gnu.tar.xz";
-      hash = "sha256-1szi0q87m3wi1d9ji7yqzgqgckiw6jn3rw0kcb0fh0kc7p711bl0";
+      url = "${baseUrl}-aarch64-linux-gnu.tar.xz";
+      hash = "";
     };
     x86_64-darwin = {
-      url = "https://github.com/espressif/crosstool-NG/releases/download/${version}/xtensa-esp-elf-${version}-x86_64-apple-darwin.tar.xz";
-      hash = "sha256-1srf9dnv4fb3wjynzd4c325ncdximhk7ijhyn84agj92291f7r82";
+      url = "${baseUrl}-x86_64-apple-darwin.tar.xz";
+      hash = "";
     };
     aarch64-darwin = {
-      url = "https://github.com/espressif/crosstool-NG/releases/download/${version}/xtensa-esp-elf-${version}-aarch64-apple-darwin.tar.xz";
-      hash = "sha256-0zk360m6rbqzzgcwzzijy6f1lrx9w7qbgia5cflr3wd5rr4xnl54";
+      url = "${baseUrl}-aarch64-apple-darwin.tar.xz";
+      hash = "sha256-pFDbSc6l8ZGpY0XFt/DhqWcanPEy/s/Z+x+vbCowY34=";
     };
   };
 

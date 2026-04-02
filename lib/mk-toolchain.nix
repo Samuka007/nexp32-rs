@@ -18,7 +18,8 @@ suffix:
 }:
 
 let
-  inherit (lib) optionalString;
+  inherit (lib) optionalString optionals;
+  isRustSrc = component == "rust-src";
 in
 
 stdenv.mkDerivation {
@@ -29,19 +30,18 @@ stdenv.mkDerivation {
     inherit (source) url hash;
   };
 
-  nativeBuildInputs = [
-    xz
-    autoPatchelfHook
-  ];
+  nativeBuildInputs = [ xz ] ++ optionals (stdenv.isLinux && !isRustSrc) [ autoPatchelfHook ];
 
-  buildInputs = [
+  buildInputs = optionals (!isRustSrc) [
     stdenv.cc.cc.lib
     zlib
   ];
 
   dontConfigure = true;
   dontBuild = true;
-  dontStrip = true;
+  # Disable strip on Darwin to avoid removing .rmeta sections from rlib files
+  # See: https://github.com/NixOS/nixpkgs/issues/218712
+  dontStrip = stdenv.isDarwin || isRustSrc;
 
   installPhase = ''
     case "${component}" in
@@ -63,7 +63,7 @@ stdenv.mkDerivation {
     esac
   '';
 
-  postFixup = optionalString stdenv.isLinux ''
+  postFixup = optionalString (stdenv.isLinux && !isRustSrc) ''
     if [ -d "$out/bin" ]; then
       for file in $(find $out/bin -type f 2>/dev/null); do
         if isELF "$file"; then
